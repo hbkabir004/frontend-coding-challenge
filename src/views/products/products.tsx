@@ -38,7 +38,7 @@ export const Products: React.FC = () => {
       }
     }
 
-    const handlePopState = (event: PopStateEvent) => {
+    const handlePopState = () => {
       const productId = new URLSearchParams(window.location.search).get("product");
       if (productId) {
         const product = PRODUCTS_DATA.find(p => p.id === productId);
