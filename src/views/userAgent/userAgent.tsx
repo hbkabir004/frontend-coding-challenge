@@ -1,11 +1,8 @@
 "use client";
 
 import { BackToHome } from "@/components/backToHome/backToHome";
-import { useUserAgentContext } from "@/components/providers/userAgentProvider";
 
-export const UserAgent = () => {
-  const { userAgent } = useUserAgentContext();
-
+export const UserAgent: React.FC<{ userAgent: string }> = ({ userAgent }) => {
   return (
     <div>
       <BackToHome />

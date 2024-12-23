@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useCallback } from "react";
-import { Product } from "@/types";
-import { ProductModal } from "@/views/products/productModal/productModal";
 import { BackToHome } from "@/components/backToHome/backToHome";
-import { ProductList } from "@/views/products/productList/productList";
-import { PaginationControls } from "@/views/products/paginationControls/paginationControls";
-import { usePagination } from "@/hooks/usePagination";
 import { PRODUCTS_DATA } from "@/data/productsData";
+import { usePagination } from "@/hooks/usePagination";
+import { Product } from "@/types";
+import { PaginationControls } from "@/views/products/paginationControls/paginationControls";
+import { ProductList } from "@/views/products/productList/productList";
+import { ProductModal } from "@/views/products/productModal/productModal";
+import React, { useCallback, useEffect, useState } from "react";
 
 export const Products: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -20,10 +20,41 @@ export const Products: React.FC = () => {
 
   const handleOpenModal = useCallback((product: Product) => {
     setSelectedProduct(product);
+    window.history.pushState({ product: product.id }, "", `/products?product=${product.id}`);
   }, []);
 
   const handleCloseModal = useCallback(() => {
     setSelectedProduct(null);
+    window.history.pushState({}, "", "/products");
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const productId = params.get("product");
+    if (productId) {
+      const product = PRODUCTS_DATA.find(p => p.id === productId);
+      if (product) {
+        setSelectedProduct(product);
+      }
+    }
+
+    const handlePopState = () => {
+      const productId = new URLSearchParams(window.location.search).get("product");
+      if (productId) {
+        const product = PRODUCTS_DATA.find(p => p.id === productId);
+        if (product) {
+          setSelectedProduct(product);
+        }
+      } else {
+        setSelectedProduct(null);
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
   }, []);
 
   return (
